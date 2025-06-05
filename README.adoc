@@ -1,0 +1,83 @@
+ifndef::leveloffset[]
+:toc: left
+:toclevels: 3
+endif::[]
+ifndef::env-github[]
+:icons: font
+endif::[]
+
+== Python MCP Server Example on GitHub Copilot
+
+=== Install
+
+. Install pip packages
++
+[source,shell]
+----
+python -m pip install -r requirements.txt --user
+----
+
+=== Checking operation on GitHub Copilot (easy method)
+This section describes the procedure for checking the operation of the MCP server using GitHub Copilot.
+
+1. Create a `settings.json` file in the `.vscode` directory and enter the following content.
++
+[source,json]
+.vscode .vscode/mcp.json
+----
+{
+  "inputs": [],
+  "servers": {
+    "simple-mcp-server": {
+      "command": "python",
+      "type": "stdio",
+      "args": ["${workspaceFolder}/src/server.py"],
+      "env": {}
+    }
+  }
+}
+----
+
+2. Open the GitHub Copilot chat screen and switch to Agent mode.
++
+image::docs/images/chat-02-show-my-mcp-server.png[Set Mode on GitHub Copilot]
+
+
+3. You can check if the loading was successful by clicking the "Select Tools..." button.
++
+image::docs/images/chat-02-show-my-mcp-server.png[]
+
+4. Open the settings and ask the following question:
++
+[source,plaintext]
+----
+add 2 3
+----
++
+image::docs/images/chat-04-result-add-2-3.png[]
+
+=== Checking the operation of the MCP server alone (difficult method)
+This section describes the procedure for checking the operation of the MCP server alone (without Copilot).  
+
+Note:: This method requires understanding the MCP JSON-RPC protocol, so it is more difficult than checking via GitHub Copilot.
+
+1. Run MCP server
++
+[source,shell]
+----
+python src/server.py
+----
+
+2. Install `expect` package
++
+[source,shell]
+----
+sudo apt install expect
+----
+
+3. Run test script
++
+[source,shell]
+----
+./test_using_jsonrpc.sh
+----

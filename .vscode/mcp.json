@@ -1,0 +1,11 @@
+{
+  "inputs": [],
+  "servers": {
+    "simple-mcp-server": {
+      "command": "python",
+      "type": "stdio",
+      "args": ["${workspaceFolder}/src/server.py"],
+      "env": {}
+    }
+  }
+}
