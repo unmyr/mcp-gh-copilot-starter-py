@@ -22,4 +22,7 @@ set t2 [clock seconds]
 set elapsed_time_initialize [expr {$t2 - $t1}]
 puts "Elapsed time for call: $elapsed_time seconds"
 
+send --  "{\"jsonrpc\":\"2.0\", \"id\": 0, \"method\":\"server.shutdown\",\"params\":[]}\r"
+# expect \"result\"
+
 exit

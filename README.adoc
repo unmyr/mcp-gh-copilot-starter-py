@@ -92,7 +92,7 @@ $ ./test_using_jsonrpc.sh
 spawn python src/server.py
 {"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "whatever", "version": "0.0.0"}}}
 {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2024-11-05","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"simple-mcp-server","version":"1.9.2"}}}
-Elapsed time for Initialize: 1 seconds
+Elapsed time for Initialize: 0 seconds
 {"jsonrpc":"2.0","method":"notifications/initialized","params":{}}
 {"jsonrpc": "2.0", "id": 0, "method": "tools/list", "params":{}}
 Processing request of type ListToolsRequest
@@ -100,5 +100,5 @@ Processing request of type ListToolsRequest
 {"jsonrpc": "2.0", "id": 0, "method": "tools/call", "params":{"name": "add", "arguments": {"a": 1, "b": 3}}}
 Processing request of type CallToolRequest
 {"jsonrpc":"2.0","id":0,"result":{"content":[{"type":"text","text":"4"}],"isError":false}}
-Elapsed time for call: 1 seconds
+Elapsed time for call: 0 seconds
 ----
