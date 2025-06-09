@@ -59,6 +59,64 @@ image::docs/images/chat-03-ask-add-2-3.png[]
 .Result of the question
 image::docs/images/chat-04-result-add-2-3.png[]
 
+=== SSE example
+This section describes the procedure for checking the operation of the MCP server using SSE (Server-Sent Events).
+
+1. Run MCP server
++
+[source,shell]
+----
+python src/server_sse.py
+----
++
+[source,plaintext]
+----
+$ python src/server_sse.py 
+[06/10/25 00:34:16] INFO     Starting MCP server 'sse-test' with transport 'sse' on http://0.0.0.0:8080/sse                                       server.py:1031
+INFO:     Started server process [71599]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53992 - "POST /sse HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:53998 - "GET /sse HTTP/1.1" 200 OK
+----
+
+2. Add server from "Select Tools..." button:
++
+[source,plaintext]
+----
+http://0.0.0.0:8080/sse
+----
+
+3. Open the settings and ask the following question:
++
+[source,plaintext]
+.Asking the question
+----
+Please tell Bob where I will be reincarnated.
+----
++
+[source,plaintext]
+.Result of the question
+----
+Bob will be reincarnated as a brave lion.
+----
+
+If you want to write it in `.vscode/mcp.json`, it will have the following format:
+
+[source,json]
+----
+{
+  "inputs": [],
+  "servers": {
+    "my-remote-mcp-server-reincarnation": {
+      "type": "sse",
+      "url": "http://0.0.0.0:8080/sse"
+    }
+  }
+}
+----
+
 === Checking the operation of the MCP server alone (difficult method)
 This section describes the procedure for checking the operation of the MCP server alone (without Copilot).  
 
