@@ -72,11 +72,11 @@ python src/server_sse.py
 [source,plaintext]
 ----
 $ python src/server_sse.py 
-[06/10/25 00:34:16] INFO     Starting MCP server 'sse-test' with transport 'sse' on http://0.0.0.0:8080/sse                                       server.py:1031
+[06/10/25 00:34:16] INFO     Starting MCP server 'sse-test' with transport 'sse' on http://0.0.0.0:3000/sse                                       server.py:1031
 INFO:     Started server process [71599]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://0.0.0.0:3000 (Press CTRL+C to quit)
 INFO:     127.0.0.1:53992 - "POST /sse HTTP/1.1" 405 Method Not Allowed
 INFO:     127.0.0.1:53998 - "GET /sse HTTP/1.1" 200 OK
 ----
@@ -85,7 +85,7 @@ INFO:     127.0.0.1:53998 - "GET /sse HTTP/1.1" 200 OK
 +
 [source,plaintext]
 ----
-http://0.0.0.0:8080/sse
+http://0.0.0.0:3000/sse
 ----
 
 3. Open the settings and ask the following question:
@@ -111,7 +111,7 @@ If you want to write it in `.vscode/mcp.json`, it will have the following format
   "servers": {
     "my-remote-mcp-server-reincarnation": {
       "type": "sse",
-      "url": "http://0.0.0.0:8080/sse"
+      "url": "http://0.0.0.0:3000/sse"
     }
   }
 }
