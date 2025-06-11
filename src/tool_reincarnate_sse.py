@@ -4,8 +4,8 @@ import random
 mcp = FastMCP(name="sse-test")
 
 
-@mcp.tool()
-def reincarnate(name: str, description="Return reincarnation message") -> str:
+@mcp.tool(name="reincarnate", description="Reincarnate a user with a random message")
+def reincarnate(name: str) -> str:
     """Reincarnation function: Receives a user's name and returns a random reincarnation message."""
     messages = [
         f"{name}, you have been reincarnated as a wise old owl.",

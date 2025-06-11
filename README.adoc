@@ -66,12 +66,12 @@ This section describes the procedure for checking the operation of the MCP serve
 +
 [source,shell]
 ----
-python src/server_sse.py
+python src/tool_reincarnate_sse.py
 ----
 +
 [source,plaintext]
 ----
-$ python src/server_sse.py 
+$ python src/tool_reincarnate_sse.py 
 [06/10/25 00:34:16] INFO     Starting MCP server 'sse-test' with transport 'sse' on http://0.0.0.0:3000/sse                                       tool_simple_math.py:1031
 INFO:     Started server process [71599]
 INFO:     Waiting for application startup.
