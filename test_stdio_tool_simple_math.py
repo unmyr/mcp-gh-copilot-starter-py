@@ -11,7 +11,7 @@ async def send_jsonrpc(writer, payload):
 
 async def read_response(reader):
     # Read until the end of the line
-    chunk = await reader.readuntil(b'\n') 
+    chunk = await reader.readuntil(b"\n")
     if not chunk:
         raise EOFError("Unexpected end of stream while reading header")
     if chunk.startswith(b"{"):
@@ -68,7 +68,8 @@ async def main_task():
     print()
     seq_id += 1
     await send_jsonrpc(
-        proc.stdin, {"jsonrpc": "2.0", "id": seq_id, "method": "tools/list", "params": {}}
+        proc.stdin,
+        {"jsonrpc": "2.0", "id": seq_id, "method": "tools/list", "params": {}},
     )
     resp = await read_response(proc.stdout)
     print("tools/list result:", resp)
