@@ -2,7 +2,7 @@
 set timeout 10
 
 set t0 [clock seconds]
-spawn python src/server.py
+spawn python src/tool_simple_math.py
 send -- "{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"initialize\", \"params\": {\"protocolVersion\": \"2024-11-05\", \"capabilities\": {}, \"clientInfo\": {\"name\": \"whatever\", \"version\": \"0.0.0\"}}}\r"
 expect \"result\"
 

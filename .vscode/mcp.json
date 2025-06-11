@@ -4,7 +4,7 @@
     "simple-mcp-server": {
       "command": "python",
       "type": "stdio",
-      "args": ["${workspaceFolder}/src/server.py"],
+      "args": ["${workspaceFolder}/src/tool_simple_math.py"],
       "env": {}
     }
   }

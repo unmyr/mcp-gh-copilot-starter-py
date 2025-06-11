@@ -31,7 +31,7 @@ This section describes the procedure for checking the operation of the MCP serve
     "simple-mcp-server": {
       "command": "python",
       "type": "stdio",
-      "args": ["${workspaceFolder}/src/server.py"],
+      "args": ["${workspaceFolder}/src/tool_simple_math.py"],
       "env": {}
     }
   }
@@ -72,7 +72,7 @@ python src/server_sse.py
 [source,plaintext]
 ----
 $ python src/server_sse.py 
-[06/10/25 00:34:16] INFO     Starting MCP server 'sse-test' with transport 'sse' on http://0.0.0.0:3000/sse                                       server.py:1031
+[06/10/25 00:34:16] INFO     Starting MCP server 'sse-test' with transport 'sse' on http://0.0.0.0:3000/sse                                       tool_simple_math.py:1031
 INFO:     Started server process [71599]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
@@ -126,7 +126,7 @@ Note:: This method requires understanding the MCP JSON-RPC protocol, so it is mo
 +
 [source,shell]
 ----
-python src/server.py
+python src/tool_simple_math.py
 ----
 
 2. Install `expect` package
@@ -147,7 +147,7 @@ sudo apt install expect
 [source,plaintext]
 ----
 $ ./test_using_jsonrpc.sh 
-spawn python src/server.py
+spawn python src/tool_simple_math.py
 {"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "whatever", "version": "0.0.0"}}}
 {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2024-11-05","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"simple-mcp-server","version":"1.9.2"}}}
 Elapsed time for Initialize: 0 seconds
