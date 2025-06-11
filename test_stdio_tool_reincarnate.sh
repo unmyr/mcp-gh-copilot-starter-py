@@ -12,7 +12,6 @@ expect  {
 }
 expect "result"
 
-puts ""
 send --  "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\",\"params\":{}}\r"
 
 puts ""
@@ -67,5 +66,5 @@ expect {
 
 puts ""
 send --  "{\"jsonrpc\":\"2.0\", \"id\": 0, \"method\":\"server.shutdown\",\"params\":[]}\r"
-# expect \"result\"
+
 exit

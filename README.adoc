@@ -140,23 +140,32 @@ sudo apt install expect
 +
 [source,shell]
 ----
-./test_using_jsonrpc.sh
+./test_stdio_tool_simple_math.sh
 ----
 +
 .Result of the test script
 [source,plaintext]
 ----
-$ ./test_using_jsonrpc.sh 
+$ ./test_stdio_tool_simple_math.sh
 spawn python src/tool_simple_math.py
 {"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "whatever", "version": "0.0.0"}}}
+Received response to initialize
 {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2024-11-05","capabilities":{"experimental":{},"prompts":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"tools":{"listChanged":false}},"serverInfo":{"name":"simple-mcp-server","version":"1.9.2"}}}
-Elapsed time for Initialize: 0 seconds
+
+Received response to tools/list
 {"jsonrpc":"2.0","method":"notifications/initialized","params":{}}
 {"jsonrpc": "2.0", "id": 0, "method": "tools/list", "params":{}}
-Processing request of type ListToolsRequest
 {"jsonrpc":"2.0","id":0,"result":{"tools":[{"name":"add","description":"Add two numbers","inputSchema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"title":"addArguments","type":"object"}},{"name":"subtract","description":"Subtract two numbers","inputSchema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"title":"subtractArguments","type":"object"}}]}}
+
+Received response to tools/call
 {"jsonrpc": "2.0", "id": 0, "method": "tools/call", "params":{"name": "add", "arguments": {"a": 1, "b": 3}}}
-Processing request of type CallToolRequest
 {"jsonrpc":"2.0","id":0,"result":{"content":[{"type":"text","text":"4"}],"isError":false}}
-Elapsed time for call: 0 seconds
+
+Received response to resources/list
+{"jsonrpc": "2.0", "id": 0, "method": "resources/list", "params":{}}
+{"jsonrpc":"2.0","id":0,"result":{"resources":[]}}
+
+Received response to prompts/list
+{"jsonrpc": "2.0", "id": 0, "method": "prompts/list"}
+{"jsonrpc":"2.0","id":0,"result":{"prompts":[]}}
 ----
