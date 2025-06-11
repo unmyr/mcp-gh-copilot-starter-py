@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
 set timeout 10
 
-spawn python src/tool_reincarnate_sse.py
+spawn python src/tool_reincarnate.py --transport stdio
 send -- "{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"initialize\", \"params\": {\"protocolVersion\": \"2024-11-05\", \"capabilities\": {}, \"clientInfo\": {\"name\": \"whatever\", \"version\": \"0.0.0\"}}}\r"
 expect  {
     -r "\r\n" {puts "Received response to initialize"}

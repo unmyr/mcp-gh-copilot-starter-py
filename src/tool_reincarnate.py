@@ -18,4 +18,17 @@ def reincarnate(name: str) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="sse", host="0.0.0.0", port=3000)
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--transport", choices=["sse", "stdio"], default="sse", help="Transport type"
+    )
+    parser.add_argument("--host", default="0.0.0.0", help="Host for SSE transport")
+    parser.add_argument("--port", type=int, default=3000, help="Port for SSE transport")
+    args = parser.parse_args()
+
+    if args.transport == "stdio":
+        mcp.run(transport="stdio")
+    else:
+        mcp.run(transport="sse", host=args.host, port=args.port)
