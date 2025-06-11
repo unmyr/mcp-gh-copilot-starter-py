@@ -1,28 +1,71 @@
 #!/usr/bin/expect -f
 set timeout 10
 
-set t0 [clock seconds]
 spawn python src/tool_simple_math.py
 send -- "{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"initialize\", \"params\": {\"protocolVersion\": \"2024-11-05\", \"capabilities\": {}, \"clientInfo\": {\"name\": \"whatever\", \"version\": \"0.0.0\"}}}\r"
-expect \"result\"
+expect  {
+    -r "\r\n" {puts "Received response to initialize"}
+    timeout {
+        puts "ERROR: Timeout occurred while waiting for response to initialize"
+        exit 1
+    }
+}
+expect "result"
 
+puts ""
 send --  "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\",\"params\":{}}\r"
-set t1 [clock seconds]
 
-set elapsed_time [expr {$t1 - $t0}]
-puts "Elapsed time for Initialize: $elapsed_time seconds"
-
+puts ""
 send -- "{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"tools/list\", \"params\":{}}\r"
-expect \"result\"
+expect  {
+    -r "\r\n" {puts "Received response to tools/list"}
+    timeout {
+        puts "ERROR: Timeout occurred while waiting for tools/list"
+        exit 1
+    }
+}
+expect "result"
 
+puts ""
 send -- "{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"tools/call\", \"params\":{\"name\": \"add\", \"arguments\": {\"a\": 1, \"b\": 3}}}\r"
-expect \"result\"
-set t2 [clock seconds]
+expect {
+  -r "\r\n" {
+    puts "Received response to tools/call"
+}
+ timeout {
+        puts "ERROR: Timeout occurred while waiting for response to tools/call"
+        exit 1
+    }
+}
+expect "result"
 
-set elapsed_time_initialize [expr {$t2 - $t1}]
-puts "Elapsed time for call: $elapsed_time seconds"
+puts ""
+send -- "{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"resources/list\", \"params\":{}}\r"
+expect {
+  -r "\r\n" {
+    puts "Received response to resources/list"
+}
+ timeout {
+        puts "ERROR: Timeout occurred while waiting for response to resources/list"
+        exit 1
+    }
+}
+expect "result"
 
+puts ""
+send -- "{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"prompts/list\"}\r"
+expect {
+  -r "\r\n" {
+    puts "Received response to prompts/list"
+    expect "result"
+}
+ timeout {
+        puts "ERROR: Timeout occurred while waiting for response to prompts/list"
+        exit 1
+    }
+}
+
+puts ""
 send --  "{\"jsonrpc\":\"2.0\", \"id\": 0, \"method\":\"server.shutdown\",\"params\":[]}\r"
 # expect \"result\"
-
 exit
