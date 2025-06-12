@@ -1,9 +1,10 @@
 import asyncio
 import json
 import sys
+import traceback
 
 
-async def read_error(error_reader, timeout=0):
+async def read_error(error_reader, timeout=0.2):
     try:
         stderr = await asyncio.wait_for(error_reader.read(), timeout=timeout)
         if stderr:
@@ -14,30 +15,26 @@ async def read_error(error_reader, timeout=0):
 
 
 async def send_jsonrpc(writer, payload):
-    message = json.dumps(payload)
-    writer.write((message + "\n").encode("utf-8"))
-    # print("Sending JSON-RPC message:", repr(message), flush=True)
-    await writer.drain()
+    try:
+        message = json.dumps(payload)
+        writer.write((message + "\n").encode("utf-8"))
+        # print("Sending JSON-RPC message:", repr(message), flush=True)
+        await writer.drain()
+    except (BrokenPipeError, ConnectionResetError) as e:
+        if str(e) == "Connection lost":
+            return None
+        print(traceback.format_exc(), flush=True, file=sys.stderr)
 
 
-async def read_response(reader, error_reader):
+async def read_response(reader):
     # Read until the end of the line
     try:
         chunk = await reader.readuntil(b"\n")
         if not chunk:
-            stderr = await read_error(error_reader)
-            if stderr:
-                print(stderr, flush=True, file=sys.stderr)
-            raise EOFError(
-                f"Unexpected end of stream while reading response: stderr: {stderr}"
-            )
-    except asyncio.IncompleteReadError as e:
-        stderr = await read_error(error_reader, 0.2)
-        if stderr:
-            print(stderr, flush=True, file=sys.stderr)
-        raise EOFError(
-            f"Unexpected end of stream while reading response: {e}: stderr: {stderr}"
-        )
+            return None
+
+    except asyncio.IncompleteReadError as _e:
+        return None
 
     if chunk.startswith(b"{"):
         body = chunk
@@ -65,100 +62,165 @@ async def main_task():
         text=False,
         close_fds=True,
     )
-    stderr = await read_error(proc.stderr, 0)
-    if stderr:
-        # This is mainly caused by incorrect command operands or option specifications.
-        print("stderr:", stderr, flush=True, file=sys.stderr)
-        sys.exit(1)
-
     seq_id = 0
 
     # 1. initialize
-    await send_jsonrpc(
-        proc.stdin,
-        {
-            "jsonrpc": "2.0",
-            "id": seq_id,
-            "method": "initialize",
-            "params": {
-                "protocolVersion": "2024-11-05",
-                "capabilities": {},
-                "clientInfo": {"name": "whatever", "version": "0.0.0"},
+    _, stderr = await asyncio.gather(
+        send_jsonrpc(
+            proc.stdin,
+            {
+                "jsonrpc": "2.0",
+                "id": seq_id,
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {},
+                    "clientInfo": {"name": "whatever", "version": "0.0.0"},
+                },
             },
-        },
+        ),
+        read_error(proc.stderr, 0),
     )
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
 
-    await asyncio.sleep(0.5)
-    resp = await read_response(proc.stdout, proc.stderr)
+    resp, stderr = await asyncio.gather(
+        read_response(proc.stdout), read_error(proc.stderr, 0)
+    )
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
     print("initialize result:", resp)
 
     # 2. notifications/initialized
-    await send_jsonrpc(
-        proc.stdin,
-        {"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}},
+    _, stderr = await asyncio.gather(
+        send_jsonrpc(
+            proc.stdin,
+            {"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}},
+        ),
+        read_error(proc.stderr, 0.2 if resp is None else 0),
     )
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
     # This notification does not expect a response
 
     # 3. tools/list
     print()
     seq_id += 1
-    await send_jsonrpc(
-        proc.stdin,
-        {"jsonrpc": "2.0", "id": seq_id, "method": "tools/list", "params": {}},
+    _, stderr = await asyncio.gather(
+        send_jsonrpc(
+            proc.stdin,
+            {"jsonrpc": "2.0", "id": seq_id, "method": "tools/list", "params": {}},
+        ),
+        read_error(proc.stderr, 0.2 if resp is None else 0),
     )
-    resp = await read_response(proc.stdout, proc.stderr)
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
+
+    resp, stderr = await asyncio.gather(
+        read_response(proc.stdout), read_error(proc.stderr, 0)
+    )
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
+
     print("tools/list result:", resp)
 
     # 4. tools/call (reincarnate)
     print()
     seq_id += 1
-    await send_jsonrpc(
-        proc.stdin,
-        {
-            "jsonrpc": "2.0",
-            "id": seq_id,
-            "method": "tools/call",
-            "params": {"name": "reincarnate", "arguments": {"name": "Ann"}},
-        },
+    _, stderr = await asyncio.gather(
+        send_jsonrpc(
+            proc.stdin,
+            {
+                "jsonrpc": "2.0",
+                "id": seq_id,
+                "method": "tools/call",
+                "params": {"name": "reincarnate", "arguments": {"name": "Ann"}},
+            },
+        ),
+        read_error(proc.stderr, 0.2 if resp is None else 0),
     )
-    resp = await read_response(proc.stdout, proc.stderr)
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
+
+    resp, stderr = await asyncio.gather(
+        read_response(proc.stdout), read_error(proc.stderr, 0)
+    )
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
+
     print("tools/call add result:", resp)
 
     # 5. resources/list
     print()
     seq_id += 1
-    await send_jsonrpc(
-        proc.stdin,
-        {
-            "jsonrpc": "2.0",
-            "id": seq_id,
-            "method": "resources/list",
-        },
+    _, stderr = await asyncio.gather(
+        send_jsonrpc(
+            proc.stdin,
+            {
+                "jsonrpc": "2.0",
+                "id": seq_id,
+                "method": "resources/list",
+            },
+        ),
+        read_error(proc.stderr, 0.2 if resp is None else 0),
     )
-    resp = await read_response(proc.stdout, proc.stderr)
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
+
+    resp, stderr = await asyncio.gather(
+        read_response(proc.stdout), read_error(proc.stderr, 0)
+    )
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
     print("resources/list add result:", resp)
 
     # 6. prompts/list
     print()
     seq_id += 1
-    await send_jsonrpc(
-        proc.stdin,
-        {
-            "jsonrpc": "2.0",
-            "id": seq_id,
-            "method": "prompts/list",
-        },
+    _, stderr = await asyncio.gather(
+        send_jsonrpc(
+            proc.stdin,
+            {
+                "jsonrpc": "2.0",
+                "id": seq_id,
+                "method": "prompts/list",
+            },
+        ),
+        read_error(proc.stderr, 0.2 if resp is None else 0),
     )
-    resp = await read_response(proc.stdout, proc.stderr)
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
+
+    resp, stderr = await asyncio.gather(
+        read_response(proc.stdout), read_error(proc.stderr, 0)
+    )
+    if stderr:
+        print(stderr, flush=True, file=sys.stderr)
+        sys.exit(1)
     print("prompts/list add result:", resp)
 
     # 7. server.shutdown
-    print()
     seq_id += 1
-    await send_jsonrpc(
-        proc.stdin,
-        {"jsonrpc": "2.0", "id": seq_id, "method": "server.shutdown", "params": []},
+    _, stderr = await asyncio.gather(
+        send_jsonrpc(
+            proc.stdin,
+            {"jsonrpc": "2.0", "id": seq_id, "method": "server.shutdown", "params": []},
+        ),
+        read_error(proc.stderr, 0.2 if resp is None else 0),
     )
+    if stderr:
+        print(f"ERROR: {stderr}", flush=True, file=sys.stderr)
+        sys.exit(1)
     # Optionally read shutdown response
 
     proc.stdin.close()
