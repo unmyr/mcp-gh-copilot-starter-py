@@ -4,6 +4,7 @@
         "ifndef",
         "leveloffset",
         "toclevels",
-        "Uvicorn"
+        "Uvicorn",
+        "venv"
     ]
 }

@@ -8,7 +8,9 @@ endif::[]
 
 == Python MCP Server Example on GitHub Copilot
 
-=== Install
+This document describes how to create a Python MCP server example that can be used with GitHub Copilot.
+
+=== Install using the system Python (without a virtual environment)
 
 . Install pip packages
 +
@@ -17,10 +19,7 @@ endif::[]
 python -m pip install -r requirements.txt --user
 ----
 
-=== Checking operation on GitHub Copilot (easy method)
-This section describes the procedure for checking the operation of the MCP server using GitHub Copilot.
-
-1. Create a `settings.json` file in the `.vscode` directory and enter the following content.
+. Create a `settings.json` file in the `.vscode` directory and enter the following content.
 +
 [source,json]
 .vscode .vscode/mcp.json
@@ -38,15 +37,76 @@ This section describes the procedure for checking the operation of the MCP serve
 }
 ----
 
-2. Open the GitHub Copilot chat screen and switch to Agent mode.
+=== Install using venv
+This section describes how to install the MCP server using a virtual environment (venv).
+
+1. Create a virtual environment
++
+[source,shell]
+----
+python -m venv .venv
+----
+
+2. Activate the virtual environment
++
+[source,shell]
+----
+source .venv/bin/activate
+----
+
+3. Create a `settings.json` file in the `.vscode` directory and enter the following content.
++
+[source,json]
+.vscode .vscode/mcp.json
+----
+{
+  "inputs": [],
+  "servers": {
+    "simple-mcp-server": {
+      "command": "mcp",
+      "type": "stdio",
+      "args": ["run", "${workspaceFolder}/src/tool_simple_math.py"],
+      "env": {}
+    }
+  }
+}
+----
+
+4. Install the MCP server
++
+[source,shell]
+----
+python -m pip install uv --user
+----
+
+.Uninstall virtual environment
+. Deactivate the virtual environment
++
+[source,shell]
+----
+deactivate
+----
+
+. Remove the virtual environment directory
++
+[source,shell]
+----
+rm -rf .venv
+----
+
+
+=== Run MCP tool server on GitHub Copilot (easy method)
+This section describes the procedure for checking the operation of the MCP server using GitHub Copilot.
+
+1. Open the GitHub Copilot chat screen and switch to Agent mode.
 +
 image::docs/images/chat-01-set-mode.png[Set Mode on GitHub Copilot]
 
-3. You can check if the loading was successful by clicking the "Select Tools..." button.
+2. You can check if the loading was successful by clicking the "Select Tools..." button.
 +
 image::docs/images/chat-02-show-my-mcp-server.png[]
 
-4. Open the settings and ask the following question:
+3. Open the settings and ask the following question:
 +
 [source,plaintext]
 ----
@@ -117,7 +177,7 @@ If you want to write it in `.vscode/mcp.json`, it will have the following format
 }
 ----
 
-=== Checking the operation of the MCP server alone (difficult method)
+=== Checking the operation of the MCP server alone (The hard way)
 This section describes the procedure for checking the operation of the MCP server alone (without Copilot).  
 
 Note:: This method requires understanding the MCP JSON-RPC protocol, so it is more difficult than checking via GitHub Copilot.
