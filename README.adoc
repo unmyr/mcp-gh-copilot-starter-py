@@ -10,6 +10,34 @@ endif::[]
 
 This document describes how to create a Python MCP server example that can be used with GitHub Copilot.
 
+=== Files
+The following files are used in this example. The files in the `src` directory are the MCP server source code, and the files in the `test_stdio_tool_*.py` and `test_stdio_tool_*.sh` files are used for testing the MCP server.
+
+[source,plaintext]
+----
+.
+├── .gitignore ... used for git
+├── .python-version ... used for uv
+├── .vscode
+│   ├── mcp.json ... used for GitHub Copilot
+│   └── settings.json ... used for VS-Code
+├── LICENSE
+├── README.adoc
+├── docs
+│   └ ...
+├── pyproject.toml ... used for uv
+├── requirements.txt ... used for pip
+├── src
+│   ├── tool_reincarnate.py
+│   └── tool_simple_math.py
+├── test_stdio_tool_reincarnate.py ... used for testing the reincarnate tool
+├── test_stdio_tool_reincarnate.sh ... used for testing the reincarnate tool
+├── test_stdio_tool_simple_math.py ... used for testing the simple math tool
+├── test_stdio_tool_simple_math.sh ... used for testing the simple math tool
+└── uv.lock ... used for uv
+----
+
+
 === Install using the system Python (without a virtual environment)
 
 . Install pip packages
@@ -22,7 +50,7 @@ python -m pip install -r requirements.txt --user
 . Create a `settings.json` file in the `.vscode` directory and enter the following content.
 +
 [source,json]
-.vscode .vscode/mcp.json
+..vscode/mcp.json
 ----
 {
   "inputs": [],
@@ -37,7 +65,7 @@ python -m pip install -r requirements.txt --user
 }
 ----
 
-=== Install using venv
+=== Install using venv and pip
 This section describes how to install the MCP server using a virtual environment (venv).
 
 1. Create a virtual environment
@@ -57,7 +85,7 @@ source .venv/bin/activate
 3. Create a `settings.json` file in the `.vscode` directory and enter the following content.
 +
 [source,json]
-.vscode .vscode/mcp.json
+..vscode/mcp.json
 ----
 {
   "inputs": [],
@@ -94,6 +122,71 @@ deactivate
 rm -rf .venv
 ----
 
+
+=== Install using venv and uv
+This section describes how to install the MCP server using a virtual environment (venv) and the `uv` package.
+
+. Install the `uv` package +
+See: https://docs.astral.sh/uv/getting-started/installation/[Installling uv]
++
+[source,shell]
+----
+python -m pip install uv --user
+----
+
+. Create a virtual environment using `uv`
++
+[source,shell]
+----
+uv venv
+----
+
+. Initialize uv project
++
+[source,shell]
+----
+uv init --bare .
+----
+
+. Install fastmcp using `uv`
++
+[source,shell]
+----
+uv add fastmcp
+----
+
+. Create a `settings.json` file in the `.vscode` directory and enter the following content.
++
+[source,json]
+..vscode/mcp.json
+----
+{
+  "inputs": [],
+  "servers": {
+    "simple-mcp-server": {
+      "command": "mcp",
+      "type": "stdio",
+      "args": ["run", "${workspaceFolder}/src/tool_simple_math.py"],
+      "env": {}
+    }
+  }
+}
+----
+
+.Uninstall virtual environment
+. Deactivate the virtual environment
++
+[source,shell]
+----
+deactivate
+----
+
+. Remove the virtual environment directory
++
+[source,shell]
+----
+rm -rf .venv
+----
 
 === Run MCP tool server on GitHub Copilot (easy method)
 This section describes the procedure for checking the operation of the MCP server using GitHub Copilot.
